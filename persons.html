@@ -1,0 +1,68 @@
+	
+
+    <!DOCTYPE html>
+    <html lang="pl">
+       
+    <head>
+       
+        <meta charset="utf-8">
+        <title>Osoby</title>
+        <script src="jquery-2.1.4.min.js"></script>
+        <script>
+     
+            $(function () {
+                //header('Access-Control-Allow-Origin: http://localhost:1337/persons');
+                // ładowanie listy osób z serwera
+                $.get("persons")
+                    .done(function (data, status) {
+                    console.log("wejscie");
+                        data.forEach(function (person) {
+                            AddPerson(person);
+                        });
+                    });
+                // dodawanie osoby po kliknięciu
+                $("#add").click(function () {
+                    var person = {
+                        "firstName": $("#firstName").val(),
+                        "lastName": $("#lastName").val()
+                    };
+                    $.post("persons", person, function (data) {
+                        AddPerson(data);
+                    });
+                });
+     
+                function AddPerson(person) {
+                    var li = $("<li></li>");
+                    li.text(person.firstName + " " + person.lastName)
+                        .append(" <a href='#'>x</a>")
+                        .appendTo("#persons")
+                        .find("a")
+                        .click(person.id, function (id) {
+                            $.ajax("persons/" + id.data, {
+                                type: "delete",
+                                error: function (s) {
+                                    alert("err");
+                                },
+                                success: function (s) {
+                                    li.remove();
+                                }
+                            });
+                        });
+                }
+            });
+           
+        </script>
+    </head>
+     
+    <body>
+        <h1>Osoby</h1>
+        <ul id="persons"></ul>
+        <h1>Nowa</h1>
+        <input type="text" id="firstName">
+        <input type="text" id="lastName">
+        <input id="add" type="button" value="dodaj">
+    </body>
+     
+    </html>
+
+
